@@ -31,13 +31,19 @@ describe('start', function() {
 	it('should resolve each function', function(done) {
 		pool.start()
 			.then(function(results) {
-				console.log(results);
+				var areFulfilled = (function() {
+					for (var i = results.length; i--;) {
+						if (results[i].isPending()) {
+							return 'Some promises [' + i + '] are still pending';
+						}
+					}
+					return true;
+				})();
+				expect(areFulfilled).to.equal(true);
 				done();
 			})
 			.catch(function(errors) {
-				console.log(errors);
-				//expect('no errors').equal(errors);
-			}).done(function() {
+				expect('no errors').equal(errors);
 				done();
 			});
 	});
@@ -50,11 +56,9 @@ function addDelays(pool, count) {
 }
 
 function delay() {
-	return function() {
-		var defer = P.defer();
-		setTimeout(function() {
-			defer.resolve('resolved value');
-		}, 100);
-		return defer.promise;
-	};
+	var defer = P.defer();
+	setTimeout(function() {
+		defer.resolve('resolved value');
+	}, 100);
+	return defer.promise;
 }

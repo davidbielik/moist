@@ -22,23 +22,26 @@
 				return defer.resolve(results);
 			}
 			for (var i = batch.length; i--;) {
-				var item = batch[i];
-				if (typeof item !== 'function') {
+				var task = batch[i];
+				if (typeof task !== 'function') {
 					throw 'invalid task in pool [' + batchNumber + '.' + i + ']';
 				}
-				console.log('\t sub-batch #' + i);
-				var value = item();
-				value = typeof value === 'function' && value.then ? 
-					value : P.resolve(value);
+				console.log('\t sub-batch #' + (batch.length - i));
+				var value = task();
+				if (typeof value !== 'function') {
+					value = P.resolve(value);
+				}
+				if (typeof value.then !== 'function') {
+					throw 'Function tasks must return a promise';
+				}
 				promises.push(value);
 			}
 			P.settle(promises)
 				.then(function(data) {
-					console.log(data);
-					results.push(data.values);
+					results = results.concat(data);
 				})
 				.catch(function(data) {
-					results.push(data);
+					results = results.concat(data);
 				}).done(function() {
 					nextBatch();
 				});
@@ -82,6 +85,9 @@
 	};
 
 	Moist.prototype.add = function(fn) {
+		if (typeof fn !== 'function') {
+			throw 'Invalid task added';
+		}
 		this.queue.push(fn);
 		return this;
 	};
