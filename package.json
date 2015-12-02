@@ -1,0 +1,34 @@
+{
+  "name": "moist",
+  "version": "0.0.1",
+  "description": "small pool",
+  "main": "src/moist.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/davidbielik/moist.git"
+  },
+  "keywords": [
+    "moist"
+  ],
+  "author": "David Bielik",
+  "license": "LicenseRef-LICENSE",
+  "bugs": {
+    "url": "https://github.com/davidbielik/moist/issues"
+  },
+  "homepage": "https://github.com/davidbielik/moist#readme",
+  "devDependencies": {
+    "bluebird": "^3.0.6",
+    "chai": "^3.4.1",
+    "grunt-mocha-test": "^0.12.7",
+    "mocha": "^2.3.4"
+  },
+  "dependencies": {
+    "bluebird": "^3.0.6"
+  }
+}
