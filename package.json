@@ -1,6 +1,6 @@
 {
   "name": "moist",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "small pool",
   "main": "src/moist.js",
   "directories": {
