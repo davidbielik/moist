@@ -8,12 +8,13 @@
 
 	module.exports = Moist;
 
-	Moist.prototype.start = function() {
+	Moist.prototype.start = function(options) {
 		var defer = P.defer();
 		var batches = this.createBatches();
 		var results = [];
 		var batchNumber = 0;
-		console.log('POOL STARTING');
+		var batchResults;
+		var afterEachBatch = (options || {}).afterEachBatch || function(){};
 		(function nextBatch() {
 			var batch = batches.shift();
 			var promises = [];
@@ -22,25 +23,33 @@
 				return defer.resolve(results);
 			}
 			for (var i = batch.length; i--;) {
-				var item = batch[i];
-				if (typeof item !== 'function') {
+				var task = batch[i];
+				if (typeof task !== 'function') {
 					throw 'invalid task in pool [' + batchNumber + '.' + i + ']';
 				}
-				console.log('\t sub-batch #' + i);
-				var value = item();
-				value = typeof value === 'function' && value.then ? 
-					value : P.resolve(value);
+				var value = task();
+				if (typeof value !== 'function') {
+					value = P.resolve(value);
+				}
+				if (typeof value.then !== 'function') {
+					throw 'Function tasks must return a promise';
+				}
 				promises.push(value);
 			}
 			P.settle(promises)
 				.then(function(data) {
-					console.log(data);
-					results.push(data.values);
+					results = results.concat(data);
+					batchResults = data;
 				})
 				.catch(function(data) {
-					results.push(data);
+					results = results.concat(data);
+					batchResults = data;
 				}).done(function() {
-					nextBatch();
+					var callback = afterEachBatch(batchResults);
+					if (!callback || typeof callback.then !== 'function') {
+						callback = P.resolve(callback);
+					}
+					callback.done(nextBatch);
 				});
 		})();
 		return defer.promise;
@@ -82,6 +91,9 @@
 	};
 
 	Moist.prototype.add = function(fn) {
+		if (typeof fn !== 'function') {
+			throw 'Invalid task added';
+		}
 		this.queue.push(fn);
 		return this;
 	};

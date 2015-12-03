@@ -1,6 +1,6 @@
 {
   "name": "moist",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "small pool",
   "main": "src/moist.js",
   "directories": {
@@ -25,8 +25,15 @@
   "devDependencies": {
     "bluebird": "^3.0.6",
     "chai": "^3.4.1",
+    "grunt-cli": "^0.1.13",
     "grunt-mocha-test": "^0.12.7",
-    "mocha": "^2.3.4"
+    "mocha": "^2.3.4",
+    "grunt": "*",
+    "grunt-contrib-concat": "*",
+    "grunt-contrib-jshint": "*",
+    "grunt-contrib-uglify": "*",
+    "grunt-contrib-watch": "*",
+    "time-grunt": "*"
   },
   "dependencies": {
     "bluebird": "^3.0.6"
